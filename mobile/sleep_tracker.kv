@@ -1,0 +1,234 @@
+#:import MDCard kivymd.uix.card.MDCard
+#:import MDRaisedButton kivymd.uix.button.MDRaisedButton
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import MDIconButton kivymd.uix.button.MDIconButton
+#:import OneLineListItem kivymd.uix.list.OneLineListItem
+
+<SleepTrackerScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 0
+        spacing: 0
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: "50dp"
+            spacing: 5
+            padding: [5, 5, 5, 5]
+
+            MDIconButton:
+                icon: "menu"
+                on_release: root.show_menu()
+                icon_color: [0.2, 0.4, 0.8, 1]
+
+            MDLabel:
+                text: "Трекер Сна"
+                font_style: "H5"
+                halign: "center"
+                valign: "center"
+                size_hint_x: 0.4
+
+            MDIconButton:
+                icon: "lightbulb-outline"
+                on_release: root.show_tips()
+                icon_color: [1, 0.8, 0, 1]
+
+            MDIconButton:
+                icon: "table"
+                on_release: root.show_weekly_chart()
+                icon_color: [0.2, 0.4, 0.8, 1]
+
+            MDIconButton:
+                icon: "brain"
+                on_release: root.show_sleep_analysis()  # ← ИСПРАВЛЕНО: было show_sleep_phases_analysis
+                icon_color: [0.8, 0.4, 0.2, 1]
+
+            MDIconButton:
+                icon: "chart-box"
+                on_release: root.show_stats()
+                icon_color: [0.2, 0.4, 0.8, 1]
+
+            MDIconButton:
+                icon: "delete"
+                on_release: root.show_manual_delete_dialog()
+                icon_color: [1, 0.2, 0.2, 1]
+
+        ScrollView:
+            do_scroll_x: False
+            bar_width: 0
+
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: 10
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [10, 10, 10, 10]
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: 1, None
+                    height: "90dp"
+                    padding: 10
+                    spacing: 5
+
+                    MDLabel:
+                        text: "Статус сна"
+                        font_style: "H6"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                    MDLabel:
+                        id: status_label
+                        text: "Не отслеживается"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: 1, None
+                    height: "110dp"
+                    padding: 10
+                    spacing: 5
+
+                    MDLabel:
+                        text: "Длительность сна"
+                        font_style: "H6"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                    MDLabel:
+                        id: duration_label
+                        text: root.current_duration
+                        font_style: "H3"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "40dp"
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint: 1, None
+                    height: "60dp"
+                    spacing: 10
+                    padding: [10, 0, 10, 0]
+
+                    MDRaisedButton:
+                        id: start_button
+                        text: "НАЧАТЬ СОН"
+                        md_bg_color: 0, 0.7, 0, 1
+                        on_press: root.start_sleep_tracking()
+                        size_hint_x: 0.5
+
+                    MDRaisedButton:
+                        id: stop_button
+                        text: "ЗАКОНЧИТЬ СОН"
+                        md_bg_color: 0.9, 0, 0, 1
+                        on_press: root.stop_sleep_tracking()
+                        size_hint_x: 0.5
+                        disabled: True
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: 1, None
+                    height: "110dp"
+                    padding: 10
+                    spacing: 5
+
+                    MDLabel:
+                        text: "Сегодня"
+                        font_style: "H6"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: "30dp"
+                        padding: [20, 0, 20, 0]
+
+                        MDLabel:
+                            text: "Время сна:"
+                            halign: "left"
+                            size_hint_x: 0.5
+
+                        MDLabel:
+                            id: today_sleep_label
+                            text: root.total_sleep_today
+                            halign: "right"
+                            size_hint_x: 0.5
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: "30dp"
+                        padding: [20, 0, 20, 0]
+
+                        MDLabel:
+                            text: "Качество:"
+                            halign: "left"
+                            size_hint_x: 0.5
+
+                        MDLabel:
+                            id: quality_label
+                            text: root.sleep_quality
+                            halign: "right"
+                            size_hint_x: 0.5
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: 1, None
+                    height: "90dp"
+                    padding: 10
+                    spacing: 5
+
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: None
+                        height: "30dp"
+
+                        MDLabel:
+                            text: "Недельные данные"
+                            font_style: "H6"
+                            halign: "left"
+                            size_hint_x: 0.6
+
+                        MDRaisedButton:
+                            text: "ТАБЛИЦА"
+                            size_hint_x: 0.4
+                            on_press: root.show_weekly_chart()
+                            md_bg_color: 0.2, 0.5, 0.8, 1
+
+                    MDLabel:
+                        id: weekly_summary_label
+                        text: "Начните отслеживать сон"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: 1, None
+                    height: "180dp"
+                    padding: 10
+                    spacing: 5
+
+                    MDLabel:
+                        text: "Последние записи"
+                        font_style: "H6"
+                        halign: "center"
+                        size_hint_y: None
+                        height: "25dp"
+
+                    ScrollView:
+                        do_scroll_x: False
+                        bar_width: 0
+
+                        BoxLayout:
+                            id: sleep_records_list
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: self.minimum_height

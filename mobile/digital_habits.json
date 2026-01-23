@@ -1,0 +1,44 @@
+[
+  {
+    "date": "2026-01-23",
+    "timestamp": "2026-01-23T16:29:50.101638",
+    "total_screen_time": 0,
+    "screen_time_before_bed": 0,
+    "social_media_time": 0,
+    "gaming_time": 120,
+    "notifications_count": 0,
+    "last_phone_use": "23:10",
+    "blue_light_filter": false,
+    "do_not_disturb": false,
+    "night_mode": true,
+    "phone_in_bedroom": false
+  },
+  {
+    "date": "2026-01-23",
+    "timestamp": "2026-01-23T16:30:08.049499",
+    "total_screen_time": 0,
+    "screen_time_before_bed": 0,
+    "social_media_time": 0,
+    "gaming_time": 21,
+    "notifications_count": 0,
+    "last_phone_use": "21:00",
+    "blue_light_filter": false,
+    "do_not_disturb": false,
+    "night_mode": false,
+    "phone_in_bedroom": false
+  },
+  {
+    "date": "2026-01-23",
+    "timestamp": "2026-01-23T16:30:35.521700",
+    "total_screen_time": 0,
+    "screen_time_before_bed": 0,
+    "social_media_time": 0,
+    "gaming_time": 240,
+    "notifications_count": 0,
+    "last_phone_use": "21:00",
+    "blue_light_filter": true,
+    "do_not_disturb": false,
+    "night_mode": false,
+    "phone_in_bedroom": false
+  }
+]

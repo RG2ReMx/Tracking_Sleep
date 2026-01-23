@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleep Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .chart-card {
+            grid-column: 1 / -1;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1e293b;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        input[type="datetime-local"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .slider-group {
+            margin-bottom: 16px;
+            padding: 16px;
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            margin: 4px 2px 0 0;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .btn-green {
+            background: #10b981;
+        }
+
+        .btn-green:hover {
+            background: #059669;
+        }
+
+        .btn-blue {
+            background: #06b6d4;
+        }
+
+        .btn-blue:hover {
+            background: #0891b2;
+        }
+
+        .results {
+            margin-top: 16px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .status-ok {
+            background: #dcfce7;
+            border-color: #bbf7d0;
+            color: #166534;
+        }
+
+        .status-error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #dc2626;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .recommendation {
+            background: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid #3b82f6;
+            border-radius: 4px;
+        }
+
+        .chart-wrapper {
+            height: 320px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 16px;
+            background: white;
+        }
+
+        .chart-controls {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .container {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            button {
+                width: 100%;
+                margin: 4px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sleep Tracker</h1>
+            <p class="subtitle">Отслеживание сна и привычек</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Новая запись</h2>
+
+                <div style="margin-bottom: 16px;">
+                    <label for="startTime">Начало сна</label>
+                    <input type="datetime-local" id="startTime">
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label for="endTime">Конец сна</label>
+                    <input type="datetime-local" id="endTime">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Экран (мин)</span>
+                        <span id="screenVal">120</span>
+                    </div>
+                    <input type="range" id="screenTime" min="0" max="300" value="120">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Соцсети (мин)</span>
+                        <span id="socialVal">60</span>
+                    </div>
+                    <input type="range" id="socialTime" min="0" max="180" value="60">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Игры (мин)</span>
+                        <span id="gameVal">45</span>
+                    </div>
+                    <input type="range" id="gameTime" min="0" max="180" value="45">
+                </div>
+
+                <button id="analyzeBtn">Анализировать</button>
+                <div id="result"></div>
+            </div>
+
+            <div class="card">
+                <h2>Сервис</h2>
+                <button class="btn-blue" id="testBtn">Тест API</button>
+                <div id="apiStatus"></div>
+
+                <h2 style="margin-top: 24px;">История</h2>
+                <button id="historyBtn">Показать</button>
+                <div id="history"></div>
+            </div>
+
+            <div class="card chart-card">
+                <h2>Статистика по дням</h2>
+                <div class="chart-controls">
+                    <button class="btn-green" id="chartBtn">Обновить</button>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSliders();
+            initChart();
+            setDefaultTimes();
+
+            document.querySelectorAll('button').forEach(btn => {
+                const handlers = {
+                    analyzeBtn: analyzeSleep,
+                    testBtn: testAPI,
+                    historyBtn: getHistory,
+                    chartBtn: loadStats
+                };
+                const handler = handlers[btn.id];
+                if (handler) btn.addEventListener('click', handler);
+            });
+
+            loadStats();
+        });
+
+        function initSliders() {
+            ['screen', 'social', 'game'].forEach(type => {
+                const slider = document.getElementById(type + 'Time');
+                const value = document.getElementById(type + 'Val');
+                if (slider && value) {
+                    const update = () => value.textContent = slider.value;
+                    slider.addEventListener('input', update);
+                    update();
+                }
+            });
+        }
+
+        function setDefaultTimes() {
+            const now = new Date();
+            const sleepStart = new Date(now.getTime() - 8 * 60 * 60 * 1000);
+
+            const fmt = d => {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return `${y}-${m}-${day}T${h}:${min}`;
+            };
+
+            document.getElementById('startTime').value = fmt(sleepStart);
+            document.getElementById('endTime').value = fmt(now);
+        }
+
+        function initChart() {
+            const canvas = document.getElementById('chart');
+            chart = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                    datasets: [{
+                        label: 'Часы сна',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: v => v + 'ч' }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/sleep/stats/weekly');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const stats = data.weekly_stats || [];
+                    const values = stats.map(s => s.avg_hours);
+                    chart.data.datasets[0].data = values;
+                    chart.update();
+                }
+            } catch (e) {
+                console.error('Stats error:', e);
+            }
+        }
+
+        async function testAPI() {
+            const el = document.getElementById('apiStatus');
+            el.innerHTML = '<div class="status-ok">Проверка...</div>';
+
+            try {
+                const res = await fetch('/api/health');
+                const data = await res.json();
+                el.innerHTML = `
+                    <div class="status-ok">
+                        API работает. Записей: ${data.records}
+                    </div>
+                `;
+            } catch (e) {
+                el.innerHTML = `
+                    <div class="status-error">API недоступен: ${e.message}</div>
+                `;
+            }
+        }
+
+        async function analyzeSleep() {
+            const resultEl = document.getElementById('result');
+            resultEl.innerHTML = '<div class="status-ok">Анализ...</div>';
+
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+
+            if (!start || !end) {
+                resultEl.innerHTML = '<div class="status-error">Укажите время</div>';
+                return;
+            }
+
+            const data = {
+                user_id: 1,
+                start_time: start + ':00',
+                end_time: end + ':00',
+                digital_habits: {
+                    screen_time_minutes: Number(document.getElementById('screenTime').value),
+                    social_media_minutes: Number(document.getElementById('socialTime').value),
+                    gaming_minutes: Number(document.getElementById('gameTime').value)
+                }
+            };
+
+            try {
+                const res = await fetch('/api/sleep', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    const a = result.analysis;
+                    let html = `
+                        <div class="status-ok">
+                            <div style="font-weight:600; margin-bottom:8px;">Готово</div>
+                            <div>${result.day_of_week}, ${result.sleep_hours}ч</div>
+                        </div>
+                        <div style="margin:12px 0">
+                            <div class="stat-row"><span>Качество:</span><span class="stat-value">${a.quality_score}</span></div>
+                            <div class="stat-row"><span>Экран:</span><span class="stat-value">${a.screen_time}мин</span></div>
+                        </div>
+                    `;
+
+                    if (result.recommendations?.length) {
+                        html += '<div style="margin-top:12px">';
+                        result.recommendations.forEach(r => {
+                            html += `<div class="recommendation">${r}</div>`;
+                        });
+                        html += '</div>';
+                    }
+
+                    resultEl.innerHTML = html;
+                    setTimeout(loadStats, 500);
+                } else {
+                    resultEl.innerHTML = `<div class="status-error">${result.message}</div>`;
+                }
+            } catch (e) {
+                resultEl.innerHTML = `<div class="status-error">Ошибка: ${e.message}</div>`;
+            }
+        }
+
+        async function getHistory() {
+            const el = document.getElementById('history');
+            el.innerHTML = '<div class="status-ok">Загрузка...</div>';
+
+            try {
+                const res = await fetch('/api/sleep/user/1');
+                const data = await res.json();
+
+                if (data.records_count > 0) {
+                    let html = `
+                        <div style="margin-bottom:8px; font-weight:600;">
+                            ${data.records_count} записей
+                        </div>
+                        <div style="max-height:240px; overflow:auto;">
+                    `;
+                    data.records.forEach(r => {
+                        html += `
+                            <div class="recommendation">
+                                <div>${r.day_of_week}</div>
+                                <div style="font-size:0.85rem; color:#64748b;">
+                                    ${r.start_time.slice(0,16)} — ${r.end_time.slice(11,16)}
+                                </div>
+                                <div>${r.sleep_hours}ч (${r.analysis.quality_score})</div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    el.innerHTML = html;
+                } else {
+                    el.innerHTML = '<div class="status-ok">Нет записей</div>';
+                }
+            } catch (e) {
+                el.innerHTML = `<div class="status-error">Ошибка: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
