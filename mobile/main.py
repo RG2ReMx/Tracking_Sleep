@@ -608,7 +608,6 @@ class SleepTrackerScreen(Screen):
 
         analysis = SleepPhaseAnalyzer.analyze_phases(last_record['sleep_phases'])
 
-        # Создаем ScrollView для контента (как в show_recommendations)
         content_scroll = ScrollView(size_hint=(1, 1), do_scroll_x=False)
 
         content = BoxLayout(orientation='vertical', spacing=10, padding=20, size_hint_y=None)
@@ -712,7 +711,6 @@ class SleepTrackerScreen(Screen):
 
         content_scroll.add_widget(content)
 
-        # Контейнер с кнопкой (как в show_recommendations)
         container = BoxLayout(orientation='vertical', size_hint_y=None, spacing=10)
         container.height = 500
         container.add_widget(content_scroll)
